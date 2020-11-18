@@ -1,9 +1,3 @@
-let all_sprites: Sprite[] = [];
-let strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
-strip.setBrightness(50)
-strip.setMatrixWidth(16)
-pins.digitalWritePin(DigitalPin.P1, 1)
-
 class Sprite {
     public color: number;
     constructor(public x: number, public y: number) { all_sprites.push(this); }
@@ -11,20 +5,20 @@ class Sprite {
     setColor(c: number) { this.color = c;}
 }
 
+let strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
+strip.setBrightness(50)
+strip.setMatrixWidth(16)
+pins.digitalWritePin(DigitalPin.P1, 1)
+
+let all_sprites: Sprite[] = [];
 let apples: Sprite[] = []
-let body_next_to_last_sprite: Sprite = null
-let body_last_sprite: Sprite = null
-let snake_body_list: Sprite[] = []
 let snake_head: Sprite = null
+let head_prior: Sprite = null
+let snake_body: Sprite[] = []
 let direction = 0
-let head_y_prior = 0
-let head_x_prior = 0
-let step = 1
 let game_over = false;
 let dir_change = false;
 let delay = 300;
-
-// TODO: speed up the game over time
 
 create_snake_head()
 create_snake_body()
@@ -63,7 +57,7 @@ function check_collisions() {
     if (snake_head.x == 0 || snake_head.x == 15 || snake_head.y == 0 || snake_head.y == 15) {
         return true;
     }
-    let collideSelf = snake_body_list.filter(b => { return b.x == snake_head.x && b.y == snake_head.y })
+    let collideSelf = snake_body.filter(b => { return b.x == snake_head.x && b.y == snake_head.y })
     if (collideSelf && collideSelf.length > 0)
         return true;
     // collide with apple?
@@ -100,13 +94,13 @@ forever(function () {
 function move(d: number) {
     move_body_where_head_was()
     if (direction == 0) {
-        snake_head.setPosition(head_x_prior, head_y_prior - step)
+        snake_head.setPosition(head_prior.x, head_prior.y - 1)
     } else if (direction == 1) {
-        snake_head.setPosition(head_x_prior + step, head_y_prior)
+        snake_head.setPosition(head_prior.x + 1, head_prior.y)
     } else if (direction == 2) {
-        snake_head.setPosition(head_x_prior, head_y_prior + step)
+        snake_head.setPosition(head_prior.x, head_prior.y + 1)
     } else {
-        snake_head.setPosition(head_x_prior - step, head_y_prior)
+        snake_head.setPosition(head_prior.x - 1, head_prior.y)
     }    
 }
 
@@ -118,31 +112,28 @@ function create_snake_head () {
 function make_body_sprite (x: number, y: number) {
     let body_sprite = new Sprite(x, y);
     body_sprite.setColor(neopixel.colors(NeoPixelColors.Yellow));
-    snake_body_list.push(body_sprite)
+    snake_body.push(body_sprite)
 }
 
 function create_snake_body () {
-    snake_body_list = [];
+    snake_body = [];
     for (let index = 0; index <= 1; index++) {
-        make_body_sprite(snake_head.x, snake_head.y + (index + step))
+        make_body_sprite(snake_head.x, snake_head.y + (index + 1))
     }
 }
 
 function make_longer_snake () {
-    body_last_sprite = snake_body_list[snake_body_list.length - 1]
-    body_next_to_last_sprite = snake_body_list[snake_body_list.length - 2]
-    let dx = body_next_to_last_sprite.x - body_last_sprite.x
-    let dy = body_next_to_last_sprite.y - body_last_sprite.y
-    let x = body_last_sprite.x + dx
-    let y = body_last_sprite.y + dy
-    make_body_sprite(x, y)
+    let last = snake_body[snake_body.length - 1]
+    let next2last = snake_body[snake_body.length - 2]
+    let dx = next2last.x - last.x
+    let dy = next2last.y - last.y
+    make_body_sprite(last.x + dx, last.y + dy)
 }
 
 function move_body_where_head_was () {
-    head_x_prior = snake_head.x
-    head_y_prior = snake_head.y
-    snake_body_list.insertAt(0, snake_body_list.pop())
-    snake_body_list[0].setPosition(snake_head.x, snake_head.y)
+    head_prior = snake_head
+    snake_body.insertAt(0, snake_body.pop())
+    snake_body[0].setPosition(snake_head.x, snake_head.y)
 }
 
 function create_random_apples () {
