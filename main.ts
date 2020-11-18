@@ -21,30 +21,37 @@ let head_y_prior = 0
 let head_x_prior = 0
 let step = 1
 let game_over = false;
+let dir_change = false;
+let delay = 300;
 
-// scene.setBackgroundColor(12)
+// TODO: speed up the game over time
+
 create_snake_head()
 create_snake_body()
 create_random_apples()
 
-input.onButtonPressed(Button.A, function () {
-    direction = direction == 0 ? 3 : direction -1;
-    //basic.showIcon(IconNames.Heart)
-    //strip.showRainbow();
-    //strip.show();
-})
-
 input.onButtonPressed(Button.B, function () {
-    direction = direction == 3 ? 0 : direction +1;
-    //basic.showIcon(IconNames.Duck)
-    //strip.clear();
-    //strip.show();
+    if (!dir_change)
+         direction = direction == 0 ? 3 : direction -1;
+    dir_change = true;
 })
 
+input.onButtonPressed(Button.A, function () {
+    if (!dir_change)
+       direction = direction == 3 ? 0 : direction +1;
+    dir_change = true;
+})
+
+let red = neopixel.colors(NeoPixelColors.Orange)
+let blue = neopixel.colors(NeoPixelColors.Blue)
 function create_display() {
-    // 16x16 array of Neopixel
-    // background fill
-    strip.showColor(neopixel.colors(NeoPixelColors.Blue));
+    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue ); }
+    for(let c=0;c<16;c++) {
+        strip.setMatrixColor(0, c, red);
+        strip.setMatrixColor(c, 0, red);
+        strip.setMatrixColor(15, c, red);
+        strip.setMatrixColor(c, 15, red);
+    }
     all_sprites.forEach(s => {
         strip.setMatrixColor(s.x, s.y, s.color)
     })
@@ -52,16 +59,23 @@ function create_display() {
 }
 
 function check_collisions() {
-    let del_a: Sprite = null;
-    apples.forEach(a => {
-        if (a.x == snake_head.x && a.y == snake_head.y) {
-            del_a = a;
-        }      
-    })
-    if (del_a) {
+    // collide with wall
+    if (snake_head.x == 0 || snake_head.x == 15 || snake_head.y == 0 || snake_head.y == 15) {
+        return true;
+    }
+    let collideSelf = snake_body_list.filter(b => { return b.x == snake_head.x && b.y == snake_head.y })
+    if (collideSelf && collideSelf.length > 0)
+        return true;
+    // collide with apple?
+    let collideApples = apples.filter(a => { return a.x == snake_head.x && a.y == snake_head.y });
+    if (collideApples && collideApples.length > 0) {
+        let del_a = collideApples[0]
         apples.removeElement(del_a);
         all_sprites.removeElement(del_a);
         make_longer_snake();
+        if (delay > 50) {
+            delay -= 10;
+        }
         create_random_apples();
     }
     return false;
@@ -69,53 +83,35 @@ function check_collisions() {
 
 forever(function () {
     if (game_over) {
-
+        strip.showColor(neopixel.colors(NeoPixelColors.Red));
+        strip.show();
+        return;
     }
     if (check_collisions()) {
         game_over = true;
         return;
     }
-    if (direction == 0) {
-        move_up()
-    } else if (direction == 1) {
-        move_right()
-    } else if (direction == 2) {
-        move_down()
-    } else {
-        move_left()
-    }
+    move(direction);
     create_display();
-    pause(300);
+    dir_change = false;
+    pause(delay);
 });
 
-/*
-sprites.onOverlap(SpriteKind.snake_head_sprite, SpriteKind.snake_body_sprite, function (sprite, otherSprite) {
-    // game.over(false, effects.dissolve)
-})
-*/
-
-function move_right () {
+function move(d: number) {
     move_body_where_head_was()
-    snake_head.setPosition(head_x_prior + step, head_y_prior)
-}
-
-function move_down () {
-    move_body_where_head_was()
-    snake_head.setPosition(head_x_prior, head_y_prior + step)
-}
-
-function move_left () {
-    move_body_where_head_was()
-    snake_head.setPosition(head_x_prior - step, head_y_prior)
-}
-
-function move_up () {
-    move_body_where_head_was()
-    snake_head.setPosition(head_x_prior, head_y_prior - step)
+    if (direction == 0) {
+        snake_head.setPosition(head_x_prior, head_y_prior - step)
+    } else if (direction == 1) {
+        snake_head.setPosition(head_x_prior + step, head_y_prior)
+    } else if (direction == 2) {
+        snake_head.setPosition(head_x_prior, head_y_prior + step)
+    } else {
+        snake_head.setPosition(head_x_prior - step, head_y_prior)
+    }    
 }
 
 function create_snake_head () {
-    snake_head = new Sprite(6,6)
+    snake_head = new Sprite(8,8)
     snake_head.setColor(neopixel.colors(NeoPixelColors.Green))
 }
 
@@ -152,7 +148,7 @@ function move_body_where_head_was () {
 function create_random_apples () {
     for (let index = 0; index < randint(1, 2); index++) {
         if (apples.length < 3) {
-            let apple_sprite = new Sprite(randint(0,15), randint(0,15));
+            let apple_sprite = new Sprite(randint(1,14), randint(1,14));
             apple_sprite.setColor(NeoPixelColors.Red);
             apples.push(apple_sprite);
         }
