@@ -26,9 +26,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Enumerations
- */
+/*
 // Standard palette
 enum Color {
     Transparent, // 0
@@ -49,10 +47,6 @@ enum Color {
     Black // 15 = RGB(0, 0, 0)
 }   // enum Color
 
-
-/**
- * Interfaces
- */
 interface ActivePolyomino {
     change: Coordinate
     index: number
@@ -76,16 +70,10 @@ interface Polyomino {
     colors: PolyominoColors
 }   // interface Polyomino
 
-/**
- * Constants
- */
 const BLOCK_SIZE: number = 5
 const COLUMNS: number = 10
 const ROWS: number = 20
 
-/**
- * Polyomino shapes.
- */
 const TETROMINOES: Polyomino[] = [
     // I
     {
@@ -654,28 +642,25 @@ const PENTOMINOES: Polyomino[] = [
     }
 ]
 
-/**
- * Global variables
- */
 let gameShapes: Polyomino[] = null
 let gameState: number[][] = null
 
-/**
- * Copies a line in the game state.
- * @param {number} source - Row to copy.
- * @param {number} destination - Row to place the copied line.
- */
+
+// Copies a line in the game state.
+// @param {number} source - Row to copy.
+// @param {number} destination - Row to place the copied line.
+//
 function copyLine(source: number, destination: number): void {
     for (let index: number = 0; index < COLUMNS; index++) {
         setBlock(destination, index, gameState[source][index])
     }   // for (index)
 }   // copyLine()
 
-/**
- * @param {number} rows - Number of rows intended for canvas.
- * @param {number} columns - Number of columns intended for canvas.
- * @return {Image} Drawing canvas of appropriate size.
- */
+//
+// @param {number} rows - Number of rows intended for canvas.
+// @param {number} columns - Number of columns intended for canvas.
+// @return {Image} Drawing canvas of appropriate size.
+//
 function createCanvas(rows: number, columns: number): Image {
     return null; //image.create(
     //   columns * BLOCK_SIZE + 1,
@@ -683,13 +668,13 @@ function createCanvas(rows: number, columns: number): Image {
     //)
 }   // createCanvas()
 
-/**
- * @param {Image} img - Drawing canvas.
- * @param {number} row - Row of block to draw.
- * @param {number} column - Column of block to draw.
- * @param {number} fillColor - Color for interior of block.
- * @param {number} borderColor - Color for highlight / shadow.
- */
+//
+// @param {Image} img - Drawing canvas.
+// @param {number} row - Row of block to draw.
+// @param {number} column - Column of block to draw.
+// @param {number} fillColor - Color for interior of block.
+// @param {number} borderColor - Color for highlight / shadow.
+//
 function drawBlock(img: Image, row: number, column: number, fillColor: number, borderColor: number): void {
     let x1: number = column * BLOCK_SIZE
     let x2: number = (column + 1) * BLOCK_SIZE
@@ -706,9 +691,9 @@ function drawBlock(img: Image, row: number, column: number, fillColor: number, b
     // img.drawLine(x1, y1, x2 - 1, y1, borderColor)
 }   // drawBlock()
 
-/**
- * @param {Image} img - Canvas for drawing the current game state.
- */
+//
+// @param {Image} img - Canvas for drawing the current game state.
+//
 function drawGameState(img: Image): void {
     // img.fill(COLOR_BG)
     // Draw grid when debugging.
@@ -725,14 +710,14 @@ function drawGameState(img: Image): void {
     }   // for (row)
 }   // drawGameState()
 
-/**
- * Used for debugging.
- * @param {Image} img - Drawing canvas of appropriate size.
- * @param {number} rows - Rows in grid.
- * @param {number} columns - Columns in grid.
- * @param {number} color - Color of grid.
- * @return {Image} - Image with grid drawn.
- */
+//
+// Used for debugging.
+// @param {Image} img - Drawing canvas of appropriate size.
+// @param {number} rows - Rows in grid.
+// @param {number} columns - Columns in grid.
+// @param {number} color - Color of grid.
+// @return {Image} - Image with grid drawn.
+//
 function drawGrid(img: Image, rows: number, columns: number, color: number): Image {
     let x: number = 0
     let y: number = 0
@@ -746,12 +731,12 @@ function drawGrid(img: Image, rows: number, columns: number, color: number): Ima
     return img
 }   // drawGrid()
 
-/**
- * @param {Image} img - Drawing canvas.
- * @param {Polyomino} poly - Polyomino to draw.
- * @param {number} row - Row of location to draw polyomino.
- * @param {number} column - Column of location to draw polyomino.
- */
+//
+// @param {Image} img - Drawing canvas.
+// @param {Polyomino} poly - Polyomino to draw.
+// @param {number} row - Row of location to draw polyomino.
+// @param {number} column - Column of location to draw polyomino.
+//
 function drawPoly(img: Image, poly: Polyomino, row: number, column: number): void {
     let blocks: string[] = poly.blocks[0]
     let r: number = row
@@ -768,9 +753,9 @@ function drawPoly(img: Image, poly: Polyomino, row: number, column: number): voi
     }   // for (s)
 }   // drawPoly()
 
-/**
- * Initializes the global game state variable.
- */
+//
+// Initializes the global game state variable.
+//
 function initGameState(): void {
     gameState = []
     for (let row: number = 0; row < ROWS; row++) {
@@ -782,25 +767,25 @@ function initGameState(): void {
     }   // for (row)
 }   // initGameState()
 
-/**
- * Place a block into the game state.
- * @param {number} row - Row of cell to update.
- * @param {number} column - Column of cell to update.
- * @param {number} state - Index of polyomino related to this cell; -1 to clear the state.
- */
+//
+// Place a block into the game state.
+// @param {number} row - Row of cell to update.
+// @param {number} column - Column of cell to update.
+// @param {number} state - Index of polyomino related to this cell; -1 to clear the state.
+//
 function setBlock(row: number, column: number, state: number): void {
     if (row >= 0 && row < ROWS && column >= 0 && column < COLUMNS) {
         gameState[row][column] = state
     }   // if (row > 0 ...)
 }   // setBlock()
 
-/**
- * Place a polyomino into the game state.
- * @param {ActivePolyomino} polyState - Polyomino to place into the game state.
- * @param {boolean} erase - True to remove the polyomino; false to place to polyomino.
- * @param {boolean} testOnly - True to test if polyomino can be placed; false to place polyomino.
- * @return {boolean} - True if polyomino can be placed; false if not
- */
+//
+// Place a polyomino into the game state.
+// @param {ActivePolyomino} polyState - Polyomino to place into the game state.
+// @param {boolean} erase - True to remove the polyomino; false to place to polyomino.
+// @param {boolean} testOnly - True to test if polyomino can be placed; false to place polyomino.
+// @return {boolean} - True if polyomino can be placed; false if not
+//
 function setPoly(polyState: ActivePolyomino, erase: boolean = false, testOnly: boolean = false): boolean {
     let poly: Polyomino = gameShapes[polyState.index]
     let blocks: string[] = poly.blocks[polyState.orientation]
@@ -825,12 +810,12 @@ function setPoly(polyState: ActivePolyomino, erase: boolean = false, testOnly: b
     return toReturn
 }   // setPoly()
 
-/**
- * Determines if a block can be placed in the game state.
- * @param {number} row - Row of cell to test.
- * @param {number} column - Column of cell to test.
- * @return {boolean} Cell is empty and within the bounds of the game state
- */
+//
+// Determines if a block can be placed in the game state.
+// @param {number} row - Row of cell to test.
+// @param {number} column - Column of cell to test.
+// @return {boolean} Cell is empty and within the bounds of the game state
+//
 function testBlock(row: number, column: number): boolean {
     if (row < 0) {
         // Only verify that column is in-bounds if row is negative.
@@ -847,3 +832,4 @@ function testBlock(row: number, column: number): boolean {
         }   // if (row >= 0 ...)
     }   // if (! row)
 }   // testBlock()
+*/

@@ -25,9 +25,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Enumerations
- */
+/*
 // Game modes
 enum GameMode {
     Animating,
@@ -36,9 +34,6 @@ enum GameMode {
     Processing
 }   // GameMode
 
-/**
- * Interfaces
- */
 interface InfoSprite {
     sprite: Sprite
 }   // interface InfoSprite
@@ -54,9 +49,6 @@ interface PolyominoSprite {
     sprite: Sprite
 }   // interface PolyominoSprite
 
-/**
- * Constants
- */
 const AUTODROP_INTERVAL: number = 25
 const COLOR_BG: number = Color.Black
 const DROP_INTERVAL_INITIAL: number = 1000
@@ -67,9 +59,6 @@ const SCORE_PER_LINE: number = 10
 const SCORE_PER_POLY: number = 1
 const STARTING_LEVELS: number[] = [1, 5, 10]
 
-/**
- * Global variables
- */
 let autoDrop: boolean = false
 let canvas: Image[] = null
 let currCanvas: number = 0
@@ -115,9 +104,7 @@ forever(function () {
     }   // switch (gameMode)
 })
 
-/**
- * Controller events
- */
+
 // TODO: how to do this with A, B, AB, and accelerometer???
 // A - left
 // B - right
@@ -166,12 +153,7 @@ input.onButtonPressed(Button.A, function () {
     }   // switch (gameMode)
 })  // controller.right.onEvent()
 
-/**
- * Other functions
- */
-/**
- * Flips the grid sprite images to indicate cleared lines.
- */
+
 function animateClearLines(): void {
     let newCanvas: number = 1 - currCanvas
     drawGameState(canvas[newCanvas])
@@ -180,10 +162,6 @@ function animateClearLines(): void {
     gameMode = GameMode.Animating
 }   // animateClearLines()
 
-/**
- * Tests for complete lines in the game state.
- * Begins animation if there are lines to clear.
- */
 function clearLines(): void {
     fullRows = []
     for (let rowNum: number = ROWS - 1; rowNum >= 0; rowNum--) {
@@ -210,9 +188,6 @@ function clearLines(): void {
     }   // if (fullRows)
 }   // clearLines()
 
-/**
- * Flips the grid sprites when clearing lines.
- */
 function flipScreens(): void {
     nextAnimate = runtime() + dropInterval / 2
     let newCanvas: number = 1 - currCanvas
@@ -226,9 +201,6 @@ function flipScreens(): void {
     }   // if (numFlips)
 }   // flipScreens()
 
-/**
- * Initialize the game variables.
- */
 function initGame(): void {
     initShapes()
     initVars()
@@ -236,9 +208,7 @@ function initGame(): void {
     initGameSprites()
 }   // initGame()
 
-/**
- * Initialize the game sprites.
- */
+
 function initGameSprites(): void {
     canvas = []
     canvas.push(createCanvas(ROWS, COLUMNS))
@@ -267,9 +237,7 @@ function initGameSprites(): void {
     // nextPolyLabel.sprite.setFlag(SpriteFlag.Ghost, true)
 }   // initGameSprites()
 
-/**
- * Initialize the gameShapes variable.
- */
+
 function initShapes(): void {
     let x = 0;
     switch (x) {
@@ -287,9 +255,7 @@ function initShapes(): void {
     }   // switch (settingsScreen.getSelectionForScreen(0, 0))
 }   // initShapes()
 
-/**
- * Initialize other game variables at the start of the game.
- */
+
 function initVars(): void {
     fullRows = []
     linesCleared = 0
@@ -302,18 +268,13 @@ function initVars(): void {
     // info.setLife(startLevel)
 }   // initVars()
 
-/**
- * Update variables when moving to the next level in the game.
- */
+
 function levelUp(): void {
     nextLevel += LINES_PER_LEVEL
     dropInterval = Math.floor(dropInterval * LEVEL_TIMER_FACTOR)
     // info.changeLifeBy(1)
 }   // levelUp()
 
-/**
- * Shift lines in the game state down into cleared lines.
- */
 function shiftLines(): void {
     linesCleared += fullRows.length
     // info.changeScoreBy(SCORE_PER_LINE * 2 ** (fullRows.length - 1))
@@ -334,9 +295,6 @@ function shiftLines(): void {
     }   // if (linesCleared > nextLevel)
 }   // shiftLines()
 
-/**
- * Place the next polyomino in the starting position.
- */
 function startNextPoly(): void {
     autoDrop = false
     if (currPoly) {
@@ -368,9 +326,6 @@ function startNextPoly(): void {
     }   // if (gameMode !== GameMode.Animating)
 }   // startNextPoly()
 
-/**
- * Update the main grid sprite.
- */
 function updateGridSprite(): void {
     let newCanvas: number = 1 - currCanvas
     drawGameState(canvas[newCanvas])
@@ -379,9 +334,6 @@ function updateGridSprite(): void {
 }   // updateGridSprite()
 
 
-/**
- * Update the next polomino sprite.
- */
 function updateNextPolySprite(): void {
     // nextPoly.img.fill(COLOR_BG)
     // Draw grid when debugging.
@@ -392,9 +344,6 @@ function updateNextPolySprite(): void {
         Math.floor((GRID_SIZE_NEXT_POLY - poly.blocks[0][0].length) / 2))
 }   // updateNextPolySprite()
 
-/**
- * Update the game sprites.
- */
 function updateScreen(): void {
     gameMode = GameMode.Processing
     // Update the next drop time if we are moving the poly down
@@ -452,3 +401,4 @@ function updateScreen(): void {
         gameMode = GameMode.Main
     }   // if (gameMode === GameMode.Processing)
 }   // updateScreen()
+*/
