@@ -1,3 +1,9 @@
+// TODO:
+//
+// - splash screen to select among 2-3 games
+// - persist high scores
+// - text ???
+
 // snake game based on https://forum.makecode.com/t/snake-and-apples/3027
 
 class Sprite {
@@ -5,6 +11,9 @@ class Sprite {
     constructor(public x: number, public y: number) { all_sprites.push(this); }
     setPosition(a: number, b: number) { this.x = a; this.y = b; }
     setColor(c: number) { this.color = c;}
+    draw(strip: neopixel.Strip) {
+        strip.setMatrixColor(this.x, this.y, this.color)
+    }
 }
 
 let strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
@@ -41,16 +50,14 @@ input.onButtonPressed(Button.A, function () {
 let red = neopixel.colors(NeoPixelColors.Orange)
 let blue = neopixel.colors(NeoPixelColors.Blue)
 function create_display() {
-    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue ); }
+    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue+p ); }
     for(let c=0;c<16;c++) {
         strip.setMatrixColor(0, c, red);
         strip.setMatrixColor(c, 0, red);
         strip.setMatrixColor(15, c, red);
         strip.setMatrixColor(c, 15, red);
     }
-    all_sprites.forEach(s => {
-        strip.setMatrixColor(s.x, s.y, s.color)
-    })
+    all_sprites.forEach(s => { s.draw(strip) });
     strip.show()
 }
 

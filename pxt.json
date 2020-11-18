@@ -9,7 +9,10 @@
     "files": [
         "main.blocks",
         "main.ts",
-        "README.md"
+        "README.md",
+        "fallingblocks.ts",
+        "snake.ts",
+        "custom.ts"
     ],
     "testFiles": [
         "test.ts"
