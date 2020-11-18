@@ -25,7 +25,6 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*
 // Game modes
 enum GameMode {
     Animating,
@@ -87,72 +86,74 @@ function runtime() {
     return control.millis();
 }
 
-forever(function () {
-    switch (gameMode) {
-        case GameMode.Animating:
-            if (runtime() >= nextAnimate) {
-                flipScreens()
-            }   // if (runtime() >= nextAnimate)
-            break
+function init_handlers() {
+    forever(function () {
+        switch (gameMode) {
+            case GameMode.Animating:
+                if (runtime() >= nextAnimate) {
+                    flipScreens()
+                }   // if (runtime() >= nextAnimate)
+                break
 
-        case GameMode.Main:
-            if (nextPoly && runtime() >= currPoly.nextDrop) {
+            case GameMode.Main:
+                if (nextPoly && runtime() >= currPoly.nextDrop) {
+                    currPoly.change.row = 1
+                    updateScreen()
+                }   // if (runtime() >= nextDrop)
+                break
+        }   // switch (gameMode)
+    })
+
+
+    // TODO: how to do this with A, B, AB, and accelerometer???
+    // A - left
+    // B - right
+    // AB - Rotate (clockwise only)
+    // shake - fall
+
+    input.onButtonPressed(Button.AB, function () {
+        switch (gameMode) {
+            case GameMode.Main:
+                let poly: Polyomino = gameShapes[currPoly.index]
+                currPoly.orientation++
+                if (currPoly.orientation >= poly.blocks.length) {
+                    currPoly.orientation = 0
+                }   // if (currPoly.orientation >= poly.blocks.length)
+                updateScreen()
+                break
+        }   // switch (gameMode)
+    })  // controller.up.onEvent()
+
+    input.onGesture(Gesture.Shake, function () {
+        switch (gameMode) {
+            case GameMode.Main:
+                autoDrop = true
                 currPoly.change.row = 1
                 updateScreen()
-            }   // if (runtime() >= nextDrop)
-            break
-    }   // switch (gameMode)
-})
+                break
+        }   // switch (gameMode)
+    })  // controller.A.onEvent()
 
 
-// TODO: how to do this with A, B, AB, and accelerometer???
-// A - left
-// B - right
-// AB - Rotate (clockwise only)
-// shake - fall
+    input.onButtonPressed(Button.B, function () {
+        switch (gameMode) {
+            case GameMode.Main:
+                currPoly.change.column = -1
+                updateScreen()
+                break
+        }   // switch (gameMode)
+    })  // controller.left.onEvent()
 
-input.onButtonPressed(Button.AB, function () {
-    switch (gameMode) {
-        case GameMode.Main:
-            let poly: Polyomino = gameShapes[currPoly.index]
-            currPoly.orientation++
-            if (currPoly.orientation >= poly.blocks.length) {
-                currPoly.orientation = 0
-            }   // if (currPoly.orientation >= poly.blocks.length)
-            updateScreen()
-            break
-    }   // switch (gameMode)
-})  // controller.up.onEvent()
+    input.onButtonPressed(Button.A, function () {
+        switch (gameMode) {
+            case GameMode.Main:
+                currPoly.change.column = 1
+                updateScreen()
+                break
+        }   // switch (gameMode)
+    })  // controller.right.onEvent()
 
-input.onGesture(Gesture.Shake, function () {
-    switch (gameMode) {
-        case GameMode.Main:
-            autoDrop = true
-            currPoly.change.row = 1
-            updateScreen()
-            break
-    }   // switch (gameMode)
-})  // controller.A.onEvent()
-
-
-input.onButtonPressed(Button.B, function () {
-    switch (gameMode) {
-        case GameMode.Main:
-            currPoly.change.column = -1
-            updateScreen()
-            break
-    }   // switch (gameMode)
-})  // controller.left.onEvent()
-
-input.onButtonPressed(Button.A, function () {
-    switch (gameMode) {
-        case GameMode.Main:
-            currPoly.change.column = 1
-            updateScreen()
-            break
-    }   // switch (gameMode)
-})  // controller.right.onEvent()
-
+}
 
 function animateClearLines(): void {
     let newCanvas: number = 1 - currCanvas
@@ -239,20 +240,7 @@ function initGameSprites(): void {
 
 
 function initShapes(): void {
-    let x = 0;
-    switch (x) {
-        case 0:
-            gameShapes = TETROMINOES
-            break
-
-        case 1:
-            gameShapes = PENTOMINOES
-            break
-
-        case 2:
-            gameShapes = TETROMINOES.concat(PENTOMINOES)
-            break
-    }   // switch (settingsScreen.getSelectionForScreen(0, 0))
+    gameShapes = TETROMINOES;
 }   // initShapes()
 
 
@@ -401,4 +389,3 @@ function updateScreen(): void {
         gameMode = GameMode.Main
     }   // if (gameMode === GameMode.Processing)
 }   // updateScreen()
-*/

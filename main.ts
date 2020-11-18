@@ -50,7 +50,7 @@ input.onButtonPressed(Button.A, function () {
 let red = neopixel.colors(NeoPixelColors.Orange)
 let blue = neopixel.colors(NeoPixelColors.Blue)
 function create_display() {
-    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue+p ); }
+    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue+p*4 ); }
     for(let c=0;c<16;c++) {
         strip.setMatrixColor(0, c, red);
         strip.setMatrixColor(c, 0, red);
