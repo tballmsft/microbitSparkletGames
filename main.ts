@@ -1,3 +1,5 @@
+// snake game based on https://forum.makecode.com/t/snake-and-apples/3027
+
 class Sprite {
     public color: number;
     constructor(public x: number, public y: number) { all_sprites.push(this); }
