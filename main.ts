@@ -4,6 +4,8 @@
 
 // snake game based on https://forum.makecode.com/t/snake-and-apples/3027
 
+let all_sprites: Sprite[] = [];
+
 class Sprite {
     public color: number;
     constructor(public x: number, public y: number) { all_sprites.push(this); }
@@ -18,9 +20,9 @@ class Screen {
     strip: neopixel.Strip;
     constructor() {
         this.strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
-        this.strip.setBrightness(50)
-        this.strip.setMatrixWidth(16)
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        this.strip.setBrightness(50)                    // don't blind the user
+        this.strip.setMatrixWidth(16)                   // sparklet screen is 16x16
+        pins.digitalWritePin(DigitalPin.P1, 1)          // turn on the sparklet display 
     }
     setPixel(x: number, y: number, c: number) {
 
@@ -39,139 +41,135 @@ let screen = new Screen();
 
 // -----------------------------------------------------
 
-let all_sprites: Sprite[] = [];
-let apples: Sprite[] = []
-let snake_head: Sprite = null
-let head_prior: Sprite = null
-let snake_body: Sprite[] = []
-let direction = 0
-let game_over = false;
-let dir_change = false;
-let delay = 300;
+class SnakeGame {
+    apples: Sprite[] = []
+    head: Sprite = null
+    head_prior: Sprite = null
+    body: Sprite[] = []
+    direction: number = 0
+    game_over: boolean = false;
+    dir_change: boolean = false;
+    delay: number = 300;
 
-start_snake_game();
+    constructor() {
+        this.create_head()
+        this.create_body()
+        this.create_random_apples()
 
-function start_snake_game() {
-    create_snake_head()
-    create_snake_body()
-    create_random_apples()
+        input.onButtonPressed(Button.B, function () {
+            if (!this.dir_change)
+                this.direction = this.direction == 0 ? 3 : this.direction -1;
+            this.dir_change = true;
+        })
 
-    input.onButtonPressed(Button.B, function () {
-        if (!dir_change)
-            direction = direction == 0 ? 3 : direction -1;
-        dir_change = true;
-    })
+        input.onButtonPressed(Button.A, function () {
+            if (!this.dir_change)
+                this.direction = this.direction == 3 ? 0 : this.direction +1;
+            this.dir_change = true;
+        })
 
-    input.onButtonPressed(Button.A, function () {
-        if (!dir_change)
-        direction = direction == 3 ? 0 : direction +1;
-        dir_change = true;
-    })
+        forever(function () {
+            if (this.game_over) {
+                screen.setAll(neopixel.colors(NeoPixelColors.Red));
+                return;
+            }
+            if (this.check_collisions()) {
+                this.game_over = true;
+                return;
+            }
+            this.move(this.direction);
+            this.create_display();
+            this.dir_change = false;
+            pause(this.delay);
+        });
+    }
 
-    forever(function () {
-        if (game_over) {
-            screen.setAll(neopixel.colors(NeoPixelColors.Red));
-            return;
+    create_display() {
+        let red = neopixel.colors(NeoPixelColors.Orange)
+        let blue = neopixel.colors(NeoPixelColors.Blue)
+        for(let p=0; p<256; p++) { screen.setRaw(p, blue+p*4 ); }
+        for(let c=0;c<16;c++) {
+            screen.setPixel(0, c, red);
+            screen.setPixel(c, 0, red);
+            screen.setPixel(15, c, red);
+            screen.setPixel(c, 15, red);
         }
-        if (check_collisions()) {
-            game_over = true;
-            return;
+        all_sprites.forEach(s => { s.draw(screen) });
+        screen.show()
+    }
+
+    check_collisions() {
+        // collide with wall
+        if (this.head.x == 0 || this.head.x == 15 || this.head.y == 0 || this.head.y == 15) {
+            return true;
         }
-        move(direction);
-        create_display();
-        dir_change = false;
-        pause(delay);
-    });
-}
-
-let red = neopixel.colors(NeoPixelColors.Orange)
-let blue = neopixel.colors(NeoPixelColors.Blue)
-function create_display() {
-    for(let p=0; p<256; p++) { screen.setRaw(p, blue+p*4 ); }
-    for(let c=0;c<16;c++) {
-        screen.setPixel(0, c, red);
-        screen.setPixel(c, 0, red);
-        screen.setPixel(15, c, red);
-        screen.setPixel(c, 15, red);
-    }
-    all_sprites.forEach(s => { s.draw(screen) });
-    screen.show()
-}
-
-function check_collisions() {
-    // collide with wall
-    if (snake_head.x == 0 || snake_head.x == 15 || snake_head.y == 0 || snake_head.y == 15) {
-        return true;
-    }
-    let collideSelf = snake_body.filter(b => { return b.x == snake_head.x && b.y == snake_head.y })
-    if (collideSelf && collideSelf.length > 0)
-        return true;
-    // collide with apple?
-    let collideApples = apples.filter(a => { return a.x == snake_head.x && a.y == snake_head.y });
-    if (collideApples && collideApples.length > 0) {
-        let del_a = collideApples[0]
-        apples.removeElement(del_a);
-        all_sprites.removeElement(del_a);
-        make_longer_snake();
-        if (delay > 50) {
-            delay -= 10;
+        let collideSelf = this.body.filter(b => { return b.x == this.head.x && b.y == this.head.y })
+        if (collideSelf && collideSelf.length > 0)
+            return true;
+        // collide with apple?
+        let collideApples = this.apples.filter(a => { return a.x == this.head.x && a.y == this.head.y });
+        if (collideApples && collideApples.length > 0) {
+            let del_a = collideApples[0]
+            this.apples.removeElement(del_a);
+            all_sprites.removeElement(del_a);
+            this.make_longer_snake();
+            if (this.delay > 80) {
+                this.delay -= 10;
+            }
+            this.create_random_apples();
         }
-        create_random_apples();
+        return false;
     }
-    return false;
-}
 
-function move(d: number) {
-    move_body_where_head_was()
-    if (direction == 0) {
-        snake_head.setPosition(head_prior.x, head_prior.y - 1)
-    } else if (direction == 1) {
-        snake_head.setPosition(head_prior.x + 1, head_prior.y)
-    } else if (direction == 2) {
-        snake_head.setPosition(head_prior.x, head_prior.y + 1)
-    } else {
-        snake_head.setPosition(head_prior.x - 1, head_prior.y)
-    }    
-}
-
-function create_snake_head () {
-    snake_head = new Sprite(8,8)
-    snake_head.setColor(neopixel.colors(NeoPixelColors.Green))
-}
-
-function make_body_sprite (x: number, y: number) {
-    let body_sprite = new Sprite(x, y);
-    body_sprite.setColor(neopixel.colors(NeoPixelColors.Yellow));
-    snake_body.push(body_sprite)
-}
-
-function create_snake_body () {
-    snake_body = [];
-    for (let index = 0; index <= 1; index++) {
-        make_body_sprite(snake_head.x, snake_head.y + (index + 1))
+    move(d: number) {
+        this.move_body_where_head_was()
+        let x_delta = this.direction == 1 ? 1 : this.direction == 3 ? -1 : 0;
+        let y_delta = this.direction == 0 ? -1 : this.direction == 2 ?  1 : 0;
+        this.head.setPosition(this.head_prior.x + x_delta, this.head_prior.y + y_delta)
     }
-}
 
-function make_longer_snake () {
-    let last = snake_body[snake_body.length - 1]
-    let next2last = snake_body[snake_body.length - 2]
-    let dx = next2last.x - last.x
-    let dy = next2last.y - last.y
-    make_body_sprite(last.x + dx, last.y + dy)
-}
+    create_head () {
+        this.head = new Sprite(8,8)
+        this.head.setColor(neopixel.colors(NeoPixelColors.Green))
+    }
 
-function move_body_where_head_was () {
-    head_prior = snake_head
-    snake_body.insertAt(0, snake_body.pop())
-    snake_body[0].setPosition(snake_head.x, snake_head.y)
-}
+    make_body_sprite (x: number, y: number) {
+        let body_sprite = new Sprite(x, y);
+        body_sprite.setColor(neopixel.colors(NeoPixelColors.Yellow));
+        this.body.push(body_sprite)
+    }
 
-function create_random_apples () {
-    for (let index = 0; index < randint(1, 2); index++) {
-        if (apples.length < 3) {
-            let apple_sprite = new Sprite(randint(1,14), randint(1,14));
-            apple_sprite.setColor(NeoPixelColors.Red);
-            apples.push(apple_sprite);
+    create_body () {
+        this.body = [];
+        for (let index = 0; index <= 1; index++) {
+            this.make_body_sprite(this.head.x, this.head.y + (index + 1))
+        }
+    }
+
+    make_longer_snake () {
+        let last = this.body[this.body.length - 1]
+        let next2last = this.body[this.body.length - 2]
+        let dx = next2last.x - last.x
+        let dy = next2last.y - last.y
+        this.make_body_sprite(last.x + dx, last.y + dy)
+    }
+
+    move_body_where_head_was () {
+        this.head_prior = this.head
+        this.body.insertAt(0, this.body.pop())
+        this.body[0].setPosition(this.head.x, this.head.y)
+    }
+
+    create_random_apples () {
+        for (let index = 0; index < randint(1, 2); index++) {
+            if (this.apples.length < 3) {
+                let apple_sprite = new Sprite(randint(1,14), randint(1,14));
+                apple_sprite.setColor(NeoPixelColors.Red);
+                this.apples.push(apple_sprite);
+            }
         }
     }
 }
+
+
+let snakeGame = new SnakeGame();
