@@ -26,8 +26,6 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Standard palette
-// TODO: go back to RGB
 enum Color {
     Transparent, // 0
     White, // 1 = RGB(255, 255, 255)
@@ -68,27 +66,27 @@ function toRGB(c: Color) {
     }
 }
 
-interface ActivePolyomino {
+class ActivePolyomino {
     change: Coordinate
     index: number
     location: Coordinate
     nextDrop: number
     orientation: number
-}   // interface ActivePolyomino
+}  
 
-interface Coordinate {
+class Coordinate {
     column: number
     row: number
-}   // interface Coordinate
+}
 
-interface Polyomino {
+class Polyomino {
     blocks: string[][]
     fillColor: number
-}   // interface Polyomino
+}
 
 const BLOCK_SIZE: number = 5
 const COLUMNS: number = 10
-const ROWS: number = 20
+const ROWS: number = 16
 
 const TETROMINOES: Polyomino[] = [
     // I
@@ -218,8 +216,8 @@ let gameState: number[][] = null
 function copyLine(source: number, destination: number): void {
     for (let index: number = 0; index < COLUMNS; index++) {
         setBlock(destination, index, gameState[source][index])
-    }   // for (index)
-}   // copyLine()
+    } 
+}
 
 //
 // @param {number} rows - Number of rows intended for canvas.
@@ -231,7 +229,7 @@ function createCanvas(rows: number, columns: number): Image {
     //   columns * BLOCK_SIZE + 1,
     //    rows * BLOCK_SIZE + 1
     //)
-}   // createCanvas()
+}
 
 //
 // @param {Image} img - Drawing canvas.
@@ -239,7 +237,6 @@ function createCanvas(rows: number, columns: number): Image {
 // @param {number} column - Column of block to draw.
 // @param {number} fillColor - Color for interior of block.
 // @param {number} borderColor - Color for highlight / shadow.
-//
 function drawBlock(img: Image, row: number, column: number, fillColor: number): void {
     let x1: number = column * BLOCK_SIZE
     let x2: number = (column + 1) * BLOCK_SIZE
@@ -254,46 +251,22 @@ function drawBlock(img: Image, row: number, column: number, fillColor: number): 
     // img.drawRect(x1, y1, BLOCK_SIZE, BLOCK_SIZE, borderColor)
     // img.drawLine(x1, y1, x1, y2 - 1, borderColor)
     // img.drawLine(x1, y1, x2 - 1, y1, borderColor)
-}   // drawBlock()
+}
 
 //
 // @param {Image} img - Canvas for drawing the current game state.
 //
 function drawGameState(img: Image): void {
     // img.fill(COLOR_BG)
-    // Draw grid when debugging.
-    // drawGrid(img, ROWS, COLUMNS, Color.Wine)
     for (let row: number = 0; row < ROWS; row++) {
         for (let column: number = 0; column < COLUMNS; column++) {
             let state: number = gameState[row][column]
             if (state > -1) {
-                drawBlock(img, row, column,
-                    gameShapes[state].fillColor)
-            }   // if (state > 0)
-        }   // for (column)
-    }   // for (row)
-}   // drawGameState()
-
-//
-// Used for debugging.
-// @param {Image} img - Drawing canvas of appropriate size.
-// @param {number} rows - Rows in grid.
-// @param {number} columns - Columns in grid.
-// @param {number} color - Color of grid.
-// @return {Image} - Image with grid drawn.
-//
-function drawGrid(img: Image, rows: number, columns: number, color: number): Image {
-    let x: number = 0
-    let y: number = 0
-    for (let h: number = 0; h <= columns; h++) {
-        // img.drawLine(x + h * BLOCK_SIZE, y, x + h * BLOCK_SIZE, y + rows * BLOCK_SIZE, color)
-    }   // for (h)
-
-    for (let v: number = 0; v <= rows; v++) {
-        // img.drawLine(x, y + v * BLOCK_SIZE, x + columns * BLOCK_SIZE, y + v * BLOCK_SIZE, color)
-    }   // for (v)
-    return img
-}   // drawGrid()
+                drawBlock(img, row, column, gameShapes[state].fillColor)
+            }   
+        }   
+    } 
+} 
 
 //
 // @param {Image} img - Drawing canvas.
@@ -310,12 +283,12 @@ function drawPoly(img: Image, poly: Polyomino, row: number, column: number): voi
         for (let char of s) {
             if (char !== '.') {
                 drawBlock(img, r, c, poly.fillColor)
-            }   // if (c)
+            }
             c++
-        }   // for (c)
+        }
         r++
-    }   // for (s)
-}   // drawPoly()
+    }
+}
 
 //
 // Initializes the global game state variable.
@@ -326,10 +299,10 @@ function initGameState(): void {
         let gameStateRow: number[] = []
         for (let column: number = 0; column < COLUMNS; column++) {
             gameStateRow.push(-1)
-        }   // for (column)
+        }
         gameState.push(gameStateRow)
-    }   // for (row)
-}   // initGameState()
+    }
+}
 
 //
 // Place a block into the game state.
@@ -340,8 +313,8 @@ function initGameState(): void {
 function setBlock(row: number, column: number, state: number): void {
     if (row >= 0 && row < ROWS && column >= 0 && column < COLUMNS) {
         gameState[row][column] = state
-    }   // if (row > 0 ...)
-}   // setBlock()
+    } 
+}
 
 //
 // Place a polyomino into the game state.
@@ -366,13 +339,13 @@ function setPoly(polyState: ActivePolyomino, erase: boolean = false, testOnly: b
                 if (!testOnly) {
                     setBlock(r, c, erase ? -1 : polyState.index)
                 }   // if (! testOnly)
-            }   // if (c)
+            } 
             c++
-        }   // for (c)
+        }
         r++
-    }   // for (s)
+    }
     return toReturn
-}   // setPoly()
+}
 
 //
 // Determines if a block can be placed in the game state.
@@ -387,12 +360,12 @@ function testBlock(row: number, column: number): boolean {
             return true
         } else {
             return false
-        }   // if (column >= 0 && column <= COLUMN)
+        }
     } else {
         if (row >= 0 && row < ROWS && column >= 0 && column < COLUMNS) {
             return gameState[row][column] === -1
         } else {
             return false
-        }   // if (row >= 0 ...)
-    }   // if (! row)
-}   // testBlock()
+        }
+    }
+}

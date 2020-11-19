@@ -1,5 +1,3 @@
-// TODO:
-//
 // - splash screen to select among 2-3 games
 // - persist high scores
 // - text ???
@@ -21,6 +19,8 @@ strip.setBrightness(50)
 strip.setMatrixWidth(16)
 pins.digitalWritePin(DigitalPin.P1, 1)
 
+// -----------------------------------------------------
+
 let all_sprites: Sprite[] = [];
 let apples: Sprite[] = []
 let snake_head: Sprite = null
@@ -31,21 +31,41 @@ let game_over = false;
 let dir_change = false;
 let delay = 300;
 
-create_snake_head()
-create_snake_body()
-create_random_apples()
+start_snake_game();
 
-input.onButtonPressed(Button.B, function () {
-    if (!dir_change)
-         direction = direction == 0 ? 3 : direction -1;
-    dir_change = true;
-})
+function start_snake_game() {
+    create_snake_head()
+    create_snake_body()
+    create_random_apples()
 
-input.onButtonPressed(Button.A, function () {
-    if (!dir_change)
-       direction = direction == 3 ? 0 : direction +1;
-    dir_change = true;
-})
+    input.onButtonPressed(Button.B, function () {
+        if (!dir_change)
+            direction = direction == 0 ? 3 : direction -1;
+        dir_change = true;
+    })
+
+    input.onButtonPressed(Button.A, function () {
+        if (!dir_change)
+        direction = direction == 3 ? 0 : direction +1;
+        dir_change = true;
+    })
+
+    forever(function () {
+        if (game_over) {
+            strip.showColor(neopixel.colors(NeoPixelColors.Red));
+            strip.show();
+            return;
+        }
+        if (check_collisions()) {
+            game_over = true;
+            return;
+        }
+        move(direction);
+        create_display();
+        dir_change = false;
+        pause(delay);
+    });
+}
 
 let red = neopixel.colors(NeoPixelColors.Orange)
 let blue = neopixel.colors(NeoPixelColors.Blue)
@@ -83,22 +103,6 @@ function check_collisions() {
     }
     return false;
 }
-
-forever(function () {
-    if (game_over) {
-        strip.showColor(neopixel.colors(NeoPixelColors.Red));
-        strip.show();
-        return;
-    }
-    if (check_collisions()) {
-        game_over = true;
-        return;
-    }
-    move(direction);
-    create_display();
-    dir_change = false;
-    pause(delay);
-});
 
 function move(d: number) {
     move_body_where_head_was()
