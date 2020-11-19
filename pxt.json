@@ -11,7 +11,8 @@
         "README.md",
         "polyominos.ts",
         "fallingblocks.ts",
-        "snake.ts"
+        "snake.ts",
+        "splash.ts"
     ],
     "testFiles": [
         "test.ts"

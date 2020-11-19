@@ -66,7 +66,7 @@ function toRGB(c: Color) {
     }
 }
 
-class ActivePolyomino {
+interface ActivePolyomino {
     change: Coordinate
     index: number
     location: Coordinate
@@ -74,17 +74,17 @@ class ActivePolyomino {
     orientation: number
 }  
 
-class Coordinate {
+interface Coordinate {
     column: number
     row: number
 }
 
-class Polyomino {
+interface Polyomino {
     blocks: string[][]
     fillColor: number
 }
 
-const BLOCK_SIZE: number = 5
+const BLOCK_SIZE: number = 1
 const COLUMNS: number = 10
 const ROWS: number = 16
 
@@ -219,62 +219,25 @@ function copyLine(source: number, destination: number): void {
     } 
 }
 
-//
-// @param {number} rows - Number of rows intended for canvas.
-// @param {number} columns - Number of columns intended for canvas.
-// @return {Image} Drawing canvas of appropriate size.
-//
-function createCanvas(rows: number, columns: number): Image {
-    return null; //image.create(
-    //   columns * BLOCK_SIZE + 1,
-    //    rows * BLOCK_SIZE + 1
-    //)
-}
 
-//
-// @param {Image} img - Drawing canvas.
-// @param {number} row - Row of block to draw.
-// @param {number} column - Column of block to draw.
-// @param {number} fillColor - Color for interior of block.
-// @param {number} borderColor - Color for highlight / shadow.
-function drawBlock(img: Image, row: number, column: number, fillColor: number): void {
-    let x1: number = column * BLOCK_SIZE
-    let x2: number = (column + 1) * BLOCK_SIZE
-    let y1: number = row * BLOCK_SIZE
-    let y2: number = (row + 1) * BLOCK_SIZE
-
-    // Simple block - For debugging
-    // img.drawRect(x1, y1, BLOCK_SIZE, BLOCK_SIZE, fillColor)
-
-    // Filled block
-    // img.fillRect(x1, y1, BLOCK_SIZE, BLOCK_SIZE, fillColor)
-    // img.drawRect(x1, y1, BLOCK_SIZE, BLOCK_SIZE, borderColor)
-    // img.drawLine(x1, y1, x1, y2 - 1, borderColor)
-    // img.drawLine(x1, y1, x2 - 1, y1, borderColor)
-}
-
-//
-// @param {Image} img - Canvas for drawing the current game state.
-//
-function drawGameState(img: Image): void {
+function drawGameState(): void {
     // img.fill(COLOR_BG)
     for (let row: number = 0; row < ROWS; row++) {
         for (let column: number = 0; column < COLUMNS; column++) {
             let state: number = gameState[row][column]
             if (state > -1) {
-                drawBlock(img, row, column, gameShapes[state].fillColor)
+                screen.setPixel(column, row, gameShapes[state].fillColor)
             }   
         }   
     } 
 } 
 
 //
-// @param {Image} img - Drawing canvas.
 // @param {Polyomino} poly - Polyomino to draw.
 // @param {number} row - Row of location to draw polyomino.
 // @param {number} column - Column of location to draw polyomino.
 //
-function drawPoly(img: Image, poly: Polyomino, row: number, column: number): void {
+function drawPoly(poly: Polyomino, row: number, column: number): void {
     let blocks: string[] = poly.blocks[0]
     let r: number = row
     let c: number
@@ -282,7 +245,7 @@ function drawPoly(img: Image, poly: Polyomino, row: number, column: number): voi
         c = column
         for (let char of s) {
             if (char !== '.') {
-                drawBlock(img, r, c, poly.fillColor)
+                screen.setPixel(c, r, poly.fillColor)
             }
             c++
         }
@@ -335,10 +298,10 @@ function setPoly(polyState: ActivePolyomino, erase: boolean = false, testOnly: b
             if (char !== '.') {
                 if (!testBlock(r, c)) {
                     toReturn = false
-                }   // if (r >0 0 && ! testBlock(r, c))
+                }
                 if (!testOnly) {
                     setBlock(r, c, erase ? -1 : polyState.index)
-                }   // if (! testOnly)
+                }
             } 
             c++
         }
