@@ -9,9 +9,9 @@
     "files": [
         "main.ts",
         "README.md",
+        "polyominos.ts",
         "fallingblocks.ts",
-        "snake.ts",
-        "polyominoes.ts"
+        "snake.ts"
     ],
     "testFiles": [
         "test.ts"
