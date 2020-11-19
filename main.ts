@@ -2,20 +2,6 @@
 // - persist high scores
 // - text ???
 
-// snake game based on https://forum.makecode.com/t/snake-and-apples/3027
-
-let all_sprites: Sprite[] = [];
-
-class Sprite {
-    public color: number;
-    constructor(public x: number, public y: number) { all_sprites.push(this); }
-    setPosition(a: number, b: number) { this.x = a; this.y = b; }
-    setColor(c: number) { this.color = c;}
-    draw(screen: Screen) {
-        screen.setPixel(this.x, this.y, this.color)
-    }
-}
-
 class Screen {
     strip: neopixel.Strip;
     constructor() {
@@ -25,7 +11,7 @@ class Screen {
         pins.digitalWritePin(DigitalPin.P1, 1)          // turn on the sparklet display 
     }
     setPixel(x: number, y: number, c: number) {
-
+        this.strip.setMatrixColor(x, y, c);
     }
     setAll(c: number) {
         this.strip.showColor(c);
@@ -37,9 +23,22 @@ class Screen {
     show() { this.strip.show(); }
 }
 
+// there is one (global) screen 
 let screen = new Screen();
 
-// -----------------------------------------------------
+class Sprite {
+    public color: number;
+    constructor(public x: number, public y: number) { }
+    setPosition(a: number, b: number) { this.x = a; this.y = b; }
+    setColor(c: number) { this.color = c;}
+    draw() {
+        screen.setPixel(this.x, this.y, this.color)
+    }
+}
+
+// ----------------------------------------------------------------------
+// snake game based on https://forum.makecode.com/t/snake-and-apples/3027
+// ----------------------------------------------------------------------
 
 class SnakeGame {
     apples: Sprite[] = []
@@ -94,7 +93,9 @@ class SnakeGame {
             screen.setPixel(15, c, red);
             screen.setPixel(c, 15, red);
         }
-        all_sprites.forEach(s => { s.draw(screen) });
+        this.apples.forEach(s => { s.draw() });
+        this.body.forEach(s => { s.draw() });
+        this.head.draw();
         screen.show()
     }
 
@@ -111,7 +112,6 @@ class SnakeGame {
         if (collideApples && collideApples.length > 0) {
             let del_a = collideApples[0]
             this.apples.removeElement(del_a);
-            all_sprites.removeElement(del_a);
             this.make_longer_snake();
             if (this.delay > 80) {
                 this.delay -= 10;
@@ -170,6 +170,5 @@ class SnakeGame {
         }
     }
 }
-
 
 let snakeGame = new SnakeGame();
