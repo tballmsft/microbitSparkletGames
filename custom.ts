@@ -47,6 +47,27 @@ enum Color {
     Black // 15 = RGB(0, 0, 0)
 }   // enum Color
 
+function toRGB(c: Color) {
+    switch(c) {
+        case Color.Transparent: return 0;
+        case Color.White: return neopixel.rgb(255, 255, 255);
+        case Color.Red: return neopixel.rgb(255, 33, 33);
+        case Color.Pink: return neopixel.rgb(255, 147, 196);
+        case Color.Orange: return neopixel.rgb(255, 129, 53)
+        case Color.Yellow: return neopixel.rgb(255, 246, 9)
+        case Color.Aqua: return neopixel.rgb(36, 156, 163)
+        case Color.BrightGreen: return neopixel.rgb(120, 220, 82)
+        case Color.Blue: return neopixel.rgb(0, 63, 173)
+        case Color.LightBlue: return neopixel.rgb(135, 242, 255)
+        case Color.Purple: return neopixel.rgb(142, 46, 196)
+        case Color.RoseBouquet: return neopixel.rgb(164, 131, 159)
+        case Color.Wine: return neopixel.rgb(92, 64, 108)
+        case Color.Bone: return neopixel.rgb(229, 205, 196)
+        case Color.Brown: return neopixel.rgb(145, 70, 61)
+        case Color.Black: return neopixel.rgb(0, 0, 0) 
+    }
+}
+
 interface ActivePolyomino {
     change: Coordinate
     index: number
@@ -60,14 +81,9 @@ interface Coordinate {
     row: number
 }   // interface Coordinate
 
-interface PolyominoColors {
-    borderColor: number
-    fillColor: number
-}   // interface PolyominoColors
-
 interface Polyomino {
     blocks: string[][]
-    colors: PolyominoColors
+    fillColor: number
 }   // interface Polyomino
 
 const BLOCK_SIZE: number = 5
@@ -87,10 +103,7 @@ const TETROMINOES: Polyomino[] = [
                 'X'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.LightBlue
-        }
+        fillColor: toRGB(Color.LightBlue)
     },
     // O
     {
@@ -100,10 +113,7 @@ const TETROMINOES: Polyomino[] = [
                 'XX'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.Yellow
-        }
+        fillColor: toRGB(Color.Yellow)
     },
     // T
     {
@@ -124,10 +134,7 @@ const TETROMINOES: Polyomino[] = [
                 'X.'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.Purple
-        }
+        fillColor: toRGB(Color.Purple)
     },
     // J
     {
@@ -148,10 +155,7 @@ const TETROMINOES: Polyomino[] = [
                 '..X'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.Aqua
-        }
+        fillColor: toRGB(Color.Aqua)
     },
     // L
     {
@@ -172,10 +176,7 @@ const TETROMINOES: Polyomino[] = [
                 'XXX'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.Orange
-        }
+        fillColor: toRGB(Color.Orange)
     },
     // S
     {
@@ -189,10 +190,7 @@ const TETROMINOES: Polyomino[] = [
                 '.X'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.BrightGreen
-        }
+        fillColor: toRGB(Color.BrightGreen)
     },
     // Z
     {
@@ -206,10 +204,7 @@ const TETROMINOES: Polyomino[] = [
                 'X.'
             ]
         ],
-        colors: {
-            borderColor: Color.Wine,
-            fillColor: Color.Red
-        }
+        fillColor: toRGB(Color.Red)
     }
 ]
 
@@ -245,7 +240,7 @@ function createCanvas(rows: number, columns: number): Image {
 // @param {number} fillColor - Color for interior of block.
 // @param {number} borderColor - Color for highlight / shadow.
 //
-function drawBlock(img: Image, row: number, column: number, fillColor: number, borderColor: number): void {
+function drawBlock(img: Image, row: number, column: number, fillColor: number): void {
     let x1: number = column * BLOCK_SIZE
     let x2: number = (column + 1) * BLOCK_SIZE
     let y1: number = row * BLOCK_SIZE
@@ -273,8 +268,7 @@ function drawGameState(img: Image): void {
             let state: number = gameState[row][column]
             if (state > -1) {
                 drawBlock(img, row, column,
-                    gameShapes[state].colors.fillColor,
-                    gameShapes[state].colors.borderColor)
+                    gameShapes[state].fillColor)
             }   // if (state > 0)
         }   // for (column)
     }   // for (row)
@@ -315,7 +309,7 @@ function drawPoly(img: Image, poly: Polyomino, row: number, column: number): voi
         c = column
         for (let char of s) {
             if (char !== '.') {
-                drawBlock(img, r, c, poly.colors.fillColor, poly.colors.borderColor)
+                drawBlock(img, r, c, poly.fillColor)
             }   // if (c)
             c++
         }   // for (c)
