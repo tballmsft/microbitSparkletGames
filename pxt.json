@@ -11,7 +11,7 @@
         "README.md",
         "fallingblocks.ts",
         "snake.ts",
-        "custom.ts"
+        "polyominoes.ts"
     ],
     "testFiles": [
         "test.ts"
