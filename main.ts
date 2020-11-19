@@ -9,15 +9,33 @@ class Sprite {
     constructor(public x: number, public y: number) { all_sprites.push(this); }
     setPosition(a: number, b: number) { this.x = a; this.y = b; }
     setColor(c: number) { this.color = c;}
-    draw(strip: neopixel.Strip) {
-        strip.setMatrixColor(this.x, this.y, this.color)
+    draw(screen: Screen) {
+        screen.setPixel(this.x, this.y, this.color)
     }
 }
 
-let strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
-strip.setBrightness(50)
-strip.setMatrixWidth(16)
-pins.digitalWritePin(DigitalPin.P1, 1)
+class Screen {
+    strip: neopixel.Strip;
+    constructor() {
+        this.strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
+        this.strip.setBrightness(50)
+        this.strip.setMatrixWidth(16)
+        pins.digitalWritePin(DigitalPin.P1, 1)
+    }
+    setPixel(x: number, y: number, c: number) {
+
+    }
+    setAll(c: number) {
+        this.strip.showColor(c);
+        this.strip.show();
+    }
+    setRaw(i: number, c: number) {
+        this.strip.setPixelColor(i, c);
+    }
+    show() { this.strip.show(); }
+}
+
+let screen = new Screen();
 
 // -----------------------------------------------------
 
@@ -52,8 +70,7 @@ function start_snake_game() {
 
     forever(function () {
         if (game_over) {
-            strip.showColor(neopixel.colors(NeoPixelColors.Red));
-            strip.show();
+            screen.setAll(neopixel.colors(NeoPixelColors.Red));
             return;
         }
         if (check_collisions()) {
@@ -70,15 +87,15 @@ function start_snake_game() {
 let red = neopixel.colors(NeoPixelColors.Orange)
 let blue = neopixel.colors(NeoPixelColors.Blue)
 function create_display() {
-    for(let p=0; p<256; p++) { strip.setPixelColor(p, blue+p*4 ); }
+    for(let p=0; p<256; p++) { screen.setRaw(p, blue+p*4 ); }
     for(let c=0;c<16;c++) {
-        strip.setMatrixColor(0, c, red);
-        strip.setMatrixColor(c, 0, red);
-        strip.setMatrixColor(15, c, red);
-        strip.setMatrixColor(c, 15, red);
+        screen.setPixel(0, c, red);
+        screen.setPixel(c, 0, red);
+        screen.setPixel(15, c, red);
+        screen.setPixel(c, 15, red);
     }
-    all_sprites.forEach(s => { s.draw(strip) });
-    strip.show()
+    all_sprites.forEach(s => { s.draw(screen) });
+    screen.show()
 }
 
 function check_collisions() {

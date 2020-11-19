@@ -31,22 +31,18 @@ enum GameMode {
     Main,
     NotReady,
     Processing
-}   // GameMode
+}
 
-interface InfoSprite {
-    sprite: Sprite
-}   // interface InfoSprite
-
-interface Pixel {
+class Pixel {
     x: number
     y: number
-}   // interface Pixel
+}
 
-interface PolyominoSprite {
+class PolyominoSprite {
     img: Image
     index: number
     sprite: Sprite
-}   // interface PolyominoSprite
+}
 
 const AUTODROP_INTERVAL: number = 25
 const COLOR_BG: number = Color.Black
@@ -67,11 +63,11 @@ let fullRows: number[] = []
 let gameMode: GameMode = GameMode.NotReady
 let gridSprite: Sprite = null
 let linesCleared: number = 0
-let linesSprite: InfoSprite = null
+let linesSprite: Sprite = null
 let nextAnimate: number = 0
 let nextLevel: number = 0
 let nextPoly: PolyominoSprite = null
-let nextPolyLabel: InfoSprite = null
+let nextPolyLabel: Sprite = null
 let numFlips: number = 0
 
 function startGame(): void {
@@ -104,13 +100,7 @@ function init_handlers() {
         }   // switch (gameMode)
     })
 
-
-    // TODO: how to do this with A, B, AB, and accelerometer???
-    // A - left
-    // B - right
-    // AB - Rotate (clockwise only)
-    // shake - fall
-
+    // AB = rotate
     input.onButtonPressed(Button.AB, function () {
         switch (gameMode) {
             case GameMode.Main:
@@ -118,12 +108,13 @@ function init_handlers() {
                 currPoly.orientation++
                 if (currPoly.orientation >= poly.blocks.length) {
                     currPoly.orientation = 0
-                }   // if (currPoly.orientation >= poly.blocks.length)
+                } 
                 updateScreen()
                 break
-        }   // switch (gameMode)
-    })  // controller.up.onEvent()
+        }
+    })
 
+    // shake = fall quickly
     input.onGesture(Gesture.Shake, function () {
         switch (gameMode) {
             case GameMode.Main:
@@ -131,28 +122,28 @@ function init_handlers() {
                 currPoly.change.row = 1
                 updateScreen()
                 break
-        }   // switch (gameMode)
-    })  // controller.A.onEvent()
+        } 
+    })
 
-
+    // move left
     input.onButtonPressed(Button.B, function () {
         switch (gameMode) {
             case GameMode.Main:
                 currPoly.change.column = -1
                 updateScreen()
                 break
-        }   // switch (gameMode)
-    })  // controller.left.onEvent()
+        }
+    })
 
+    // move right
     input.onButtonPressed(Button.A, function () {
         switch (gameMode) {
             case GameMode.Main:
                 currPoly.change.column = 1
                 updateScreen()
                 break
-        }   // switch (gameMode)
-    })  // controller.right.onEvent()
-
+        }
+    })
 }
 
 function animateClearLines(): void {
@@ -161,7 +152,7 @@ function animateClearLines(): void {
     numFlips = 0
     nextAnimate = runtime() + dropInterval / 2
     gameMode = GameMode.Animating
-}   // animateClearLines()
+}
 
 function clearLines(): void {
     fullRows = []
@@ -171,23 +162,23 @@ function clearLines(): void {
         for (let cell of row) {
             if (cell > -1) {
                 count++
-            }   // if (cell)
-        }   // for (cell)
+            }
+        }
         if (count >= COLUMNS) {
             fullRows.push(rowNum)
-        }   // if (count >= COLUMNS)
-    }   // for (rowNum)
+        }
+    }
 
     if (fullRows.length > 0) {
         // Clear the full rows for the animation
         for (let row of fullRows) {
             for (let col: number = 0; col < COLUMNS; col++) {
                 setBlock(row, col, -1)
-            }   // for (col)
-        }   // for (row)
+            }
+        }
         animateClearLines()
-    }   // if (fullRows)
-}   // clearLines()
+    }
+}
 
 function flipScreens(): void {
     nextAnimate = runtime() + dropInterval / 2
@@ -203,12 +194,11 @@ function flipScreens(): void {
 }   // flipScreens()
 
 function initGame(): void {
-    initShapes()
+    gameShapes = TETROMINOES;
     initVars()
     initGameState()
     initGameSprites()
-}   // initGame()
-
+}
 
 function initGameSprites(): void {
     canvas = []
@@ -229,20 +219,11 @@ function initGameSprites(): void {
     nextPoly.sprite.x = 0; //screen.width - nextPoly.img.width / 2 - 10
     nextPoly.sprite.y = 0; //screen.height - nextPoly.img.height / 2 - 10
     //nextPoly.sprite.setFlag(SpriteFlag.Ghost, true)
-    nextPolyLabel = {
-        sprite: null
-    }
-    nextPolyLabel.sprite = null; // sprites.create(nextPolyLabel.img, 0)
-    nextPolyLabel.sprite.x = nextPoly.sprite.x
-    nextPolyLabel.sprite.y = nextPoly.sprite.y - 32
+    nextPolyLabel = null; // sprites.create(nextPolyLabel.img, 0)
+    nextPolyLabel.x = nextPoly.sprite.x
+    nextPolyLabel.y = nextPoly.sprite.y - 32
     // nextPolyLabel.sprite.setFlag(SpriteFlag.Ghost, true)
 }   // initGameSprites()
-
-
-function initShapes(): void {
-    gameShapes = TETROMINOES;
-}   // initShapes()
-
 
 function initVars(): void {
     fullRows = []
