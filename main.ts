@@ -1,11 +1,14 @@
 // abstract the 16x16 Sparklet screen, which underneath is a single neopixel strip
 
+const SCREEN_WIDTH = 16;
+const SCREEN_HEIGHT = 16;
+
 class Screen {
-    strip: neopixel.Strip;
+    private strip: neopixel.Strip;
     constructor() {
-        this.strip = neopixel.create(DigitalPin.P0, 256, NeoPixelMode.RGB)
+        this.strip = neopixel.create(DigitalPin.P0, SCREEN_WIDTH*SCREEN_HEIGHT, NeoPixelMode.RGB)
         this.strip.setBrightness(50)                    // don't blind the user
-        this.strip.setMatrixWidth(16)                   // sparklet screen is 16x16
+        this.strip.setMatrixWidth(SCREEN_WIDTH)         // sparklet screen is 16x16
         pins.digitalWritePin(DigitalPin.P1, 1)          // turn on the sparklet display 
     }
     setPixel(x: number, y: number, c: number) {
@@ -44,3 +47,5 @@ class SparkletGame {
 
 // TODO: splash screen
 let snakeGame = new SnakeGame();
+
+// startFallingBlocks();

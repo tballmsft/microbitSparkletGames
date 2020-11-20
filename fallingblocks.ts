@@ -30,7 +30,8 @@ enum GameMode {
     Animating,
     Main,
     NotReady,
-    Processing
+    Processing,
+    Over
 }
 
 interface Pixel {
@@ -43,9 +44,8 @@ interface PolyominoSprite {
     sprite: Sprite
 }
 
-const AUTODROP_INTERVAL: number = 25
-const COLOR_BG: number = Color.Black
-const DROP_INTERVAL_INITIAL: number = 1000
+const AUTODROP_INTERVAL: number = 25            // milliseconds
+const DROP_INTERVAL_INITIAL: number = 1000      // milliseconds
 const LEVEL_TIMER_FACTOR: number = 0.85
 const LINES_PER_LEVEL: number = 5
 const GRID_SIZE_NEXT_POLY: number = 6
@@ -55,7 +55,7 @@ const STARTING_LEVELS: number[] = [1, 5, 10]
 
 let autoDrop: boolean = false
 let currPoly: ActivePolyomino = null
-let nextPoly: PolyominoSprite = null
+let nextPoly: number = 0;
 let fullRows: number[] = []                 // set of completed rows, to be eliminated
 let dropInterval: number = 0
 let gameMode: GameMode = GameMode.NotReady
@@ -65,34 +65,35 @@ let nextLevel: number = 0
 
 let numFlips: number = 0
 
-function startGame(): void {
+function startFallingBlocks(): void {
     gameMode = GameMode.NotReady
     initGame()
     startNextPoly()
     updateScreen()
-    gameMode = GameMode.Main
+    gameMode = GameMode.Main;
+    initHandlers();
 } 
 
 function runtime() {
     return control.millis();
 }
 
-function init_handlers() {
+function initHandlers() {
     forever(function () {
         switch (gameMode) {
             case GameMode.Animating:
                 if (runtime() >= nextAnimate) {
                     flipScreens()
-                }   // if (runtime() >= nextAnimate)
+                }
                 break
 
             case GameMode.Main:
                 if (nextPoly && runtime() >= currPoly.nextDrop) {
                     currPoly.change.row = 1
                     updateScreen()
-                }   // if (runtime() >= nextDrop)
+                }
                 break
-        }   // switch (gameMode)
+        }
     })
 
     // AB = rotate
@@ -188,22 +189,10 @@ function initGame(): void {
     gameShapes = TETROMINOES;
     initVars()
     initGameState()
-    initGameSprites()
-}
-
-// TODO
-function initGameSprites(): void {
-    nextPoly = {
-        index: 0,
-        sprite: null
-    }
-    nextPoly.sprite = null; // sprites.create(nextPoly.img, 0)
-    nextPoly.sprite.x = 0; //screen.width - nextPoly.img.width / 2 - 10
-    nextPoly.sprite.y = 0; //screen.height - nextPoly.img.height / 2 - 10
-    //nextPoly.sprite.setFlag(SpriteFlag.Ghost, true)
 }
 
 function initVars(): void {
+    nextPoly = 0;
     fullRows = []
     linesCleared = 0
     nextLevel = LINES_PER_LEVEL
@@ -213,7 +202,7 @@ function initVars(): void {
     let startLevel: number = STARTING_LEVELS[0]
     dropInterval = Math.round(DROP_INTERVAL_INITIAL * LEVEL_TIMER_FACTOR ** (startLevel - 1))
     // info.setLife(startLevel)
-}   // initVars()
+} 
 
 
 function levelUp(): void {
@@ -250,23 +239,23 @@ function startNextPoly(): void {
     } else {
         // Start of game
         // Prime nextPoly
-        nextPoly.index = Math.randomRange(0, gameShapes.length - 1)
+        nextPoly = Math.randomRange(0, gameShapes.length - 1)
     } 
-    let newPoly: Polyomino = gameShapes[nextPoly.index]
+    let newPoly: Polyomino = gameShapes[nextPoly]
     currPoly = {
         change: {
             column: 0,
             row: 0
         },
-        index: nextPoly.index,
+        index: nextPoly,
         location: {
             column: Math.floor((COLUMNS - newPoly.blocks[0][0].length) / 2),
-            row: 0 - newPoly.blocks[0].length
+            row: 0 - newPoly.blocks[0].length    // starts above screen
         },
         nextDrop: 0,
         orientation: 0
     }
-    nextPoly.index = Math.randomRange(0, gameShapes.length - 1)
+    nextPoly = Math.randomRange(0, gameShapes.length - 1)
     // If we're clearing lines, update the Next Poly sprite later
     if (gameMode !== GameMode.Animating) {
         updateNextPolySprite()
@@ -274,11 +263,10 @@ function startNextPoly(): void {
 }
 
 function updateNextPolySprite(): void {
-    // nextPoly.img.fill(COLOR_BG)
-    let poly: Polyomino = gameShapes[nextPoly.index]
+    let poly: Polyomino = gameShapes[nextPoly]
     drawPoly(poly,
-        Math.floor((GRID_SIZE_NEXT_POLY - poly.blocks[0].length) / 2),
-        Math.floor((GRID_SIZE_NEXT_POLY - poly.blocks[0][0].length) / 2))
+        Math.floor(SCREEN_WIDTH - (GRID_SIZE_NEXT_POLY - poly.blocks[0].length) / 2),
+        Math.floor(SCREEN_HEIGHT - (GRID_SIZE_NEXT_POLY - poly.blocks[0][0].length) / 2))
 }
 
 function updateScreen(): void {
@@ -305,6 +293,7 @@ function updateScreen(): void {
         drawGameState()
         setPoly(currPoly, true)
     } else {
+        drawGameState()
         // Cannot accommodate requested change
         // Undo change
         if (currPoly.change.row !== 0 || currPoly.change.column !== 0) {
@@ -321,8 +310,8 @@ function updateScreen(): void {
         if (currPoly.change.row > 0 && currPoly.change.column === 0) {
             // Attempted to drop poly but could not
             if (currPoly.location.row < 0) {
-                // TODO: 
-                // game.over(false, effects.dissolve)
+                gameMode = GameMode.Over;
+                screen.setAll(Color.Red);
             } else {
                 // Set it and then create a new poly
                 // info.changeScoreBy(SCORE_PER_POLY)
@@ -330,6 +319,7 @@ function updateScreen(): void {
             }
         }
     }
+    screen.show();
     currPoly.change.column = 0;
     currPoly.change.row = 0;
     // If we're clearing lines, then do not switch back to main game mode

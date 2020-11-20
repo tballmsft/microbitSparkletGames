@@ -221,13 +221,10 @@ function copyLine(source: number, destination: number): void {
 
 
 function drawGameState(): void {
-    // img.fill(COLOR_BG)
     for (let row: number = 0; row < ROWS; row++) {
         for (let column: number = 0; column < COLUMNS; column++) {
             let state: number = gameState[row][column]
-            if (state > -1) {
-                screen.setPixel(column, row, gameShapes[state].fillColor)
-            }   
+            screen.setPixel(column, row, state > -1 ? gameShapes[state].fillColor : 0)
         }   
     } 
 } 
