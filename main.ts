@@ -45,15 +45,25 @@ class SparkletGame {
     // A, B, AB, Shake
 }
 
+let snakeGame = true;
+function startGame() {
+    if (snakeGame) 
+        new SnakeGame();
+    else
+        startFallingBlocks();
+}
+
 let gotButton = false;
 input.onButtonPressed(Button.A, function () {
     gotButton = true;
-})
-input.onButtonPressed(Button.B, function () {
-    gotButton = true;
+    startGame();
 })
 
-let snakeGame = true;
+input.onButtonPressed(Button.B, function () {
+    gotButton = true;
+    startGame();
+})
+
 while(!gotButton) {
     snakeGame = true;
     drawImage(snake);
@@ -65,7 +75,3 @@ while(!gotButton) {
     pause(2000);
 }
 
-if (snakeGame) 
-    new SnakeGame();
-else
-    startFallingBlocks();
