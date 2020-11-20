@@ -1,10 +1,16 @@
-## Edit this project ![Build status badge](https://github.com/tballmsft/microbitsparkletgames/workflows/MakeCode/badge.svg)
+## Run/Edit this project ![Build status badge](https://github.com/tballmsft/microbitsparkletgames/workflows/MakeCode/badge.svg)
 
 To edit this repository in MakeCode.
 
 * open [https://makecode.microbit.org/](https://makecode.microbit.org/)
 * click on **Import** then click on **Import URL**
 * paste **https://github.com/tballmsft/microbitsparkletgames** and click import
+
+## Instructions
+
+- Press either A/B button when you see the game you would like to play (snake or blocks)
+- Snake game: A/B buttons to turn clockwise/counterclockwise; eat red dots; avoid wall and snake body
+- Block game: A/B buttons to move block left/right; A+B to rotate; Shake to drop block
 
 #### Metadata (used for search, rendering)
 
