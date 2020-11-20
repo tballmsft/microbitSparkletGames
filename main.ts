@@ -47,5 +47,4 @@ class SparkletGame {
 
 // TODO: splash screen
 let snakeGame = new SnakeGame();
-
 // startFallingBlocks();

@@ -219,12 +219,13 @@ function copyLine(source: number, destination: number): void {
     } 
 }
 
-
 function drawGameState(): void {
     for (let row: number = 0; row < ROWS; row++) {
+        screen.setPixel(0, row, toRGB(Color.Wine));
+        screen.setPixel(11, row, toRGB(Color.Wine));
         for (let column: number = 0; column < COLUMNS; column++) {
             let state: number = gameState[row][column]
-            screen.setPixel(column, row, state > -1 ? gameShapes[state].fillColor : 0)
+            screen.setPixel(column+1, row, state > -1 ? gameShapes[state].fillColor : 0)
         }   
     } 
 } 
