@@ -46,14 +46,14 @@ class SnakeGame {
     }
 
     create_display() {
-        let red = neopixel.colors(NeoPixelColors.Orange)
+        let border = toRGB(Color.Wine)
         let blue = neopixel.colors(NeoPixelColors.Blue)
         for(let p=0; p<256; p++) { screen.setRaw(p, blue+p*4 ); }
         for(let c=0;c<16;c++) {
-            screen.setPixel(0, c, red);
-            screen.setPixel(c, 0, red);
-            screen.setPixel(15, c, red);
-            screen.setPixel(c, 15, red);
+            screen.setPixel(0, c, border);
+            screen.setPixel(c, 0, border);
+            screen.setPixel(15, c, border);
+            screen.setPixel(c, 15, border);
         }
         this.apples.forEach(s => { s.draw() });
         this.body.forEach(s => { s.draw() });
