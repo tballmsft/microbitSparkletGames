@@ -45,6 +45,27 @@ class SparkletGame {
     // A, B, AB, Shake
 }
 
-// TODO: splash screen
-let snakeGame = new SnakeGame();
-// startFallingBlocks();
+let gotButton = false;
+input.onButtonPressed(Button.A, function () {
+    gotButton = true;
+})
+input.onButtonPressed(Button.B, function () {
+    gotButton = true;
+})
+
+let snakeGame = true;
+while(!gotButton) {
+    snakeGame = true;
+    drawImage(snake);
+    pause(2000);
+    if (gotButton)
+        break;
+    drawImage(blocks);
+    snakeGame = false
+    pause(2000);
+}
+
+if (snakeGame) 
+    new SnakeGame();
+else
+    startFallingBlocks();
