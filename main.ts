@@ -7,7 +7,7 @@ class Screen {
     private strip: neopixel.Strip;
     constructor() {
         this.strip = neopixel.create(DigitalPin.P0, SCREEN_WIDTH*SCREEN_HEIGHT, NeoPixelMode.RGB)
-        this.strip.setBrightness(50)                    // don't blind the user
+        this.strip.setBrightness(25)                    // don't blind the user
         this.strip.setMatrixWidth(SCREEN_WIDTH)         // sparklet screen is 16x16
         pins.digitalWritePin(DigitalPin.P1, 1)          // turn on the sparklet display 
     }
@@ -42,6 +42,7 @@ class SparkletGame {
     // game start
     // game over
     // game update
+    // game score
     // A, B, AB, Shake
 }
 
@@ -74,4 +75,3 @@ while(!gotButton) {
     snakeGame = false
     pause(2000);
 }
-
