@@ -1,5 +1,6 @@
 
-![sparklet back](sparkletBack.JPG)![sparklet snake](sparkletSnake.JPG)![sparklet blocks](sparkletBlocks.JPG)
+[![banner](banner.GIF)](https://www.youtube.com/watch?v=VbkmTn-2-Kg){:target="_blank"} 
+
 
 ## Run/Edit this project ![Build status badge](https://github.com/tballmsft/microbitsparkletgames/workflows/MakeCode/badge.svg)
 
