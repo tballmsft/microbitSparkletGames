@@ -1,7 +1,7 @@
 
 [![banner](banner.GIF)](https://www.youtube.com/watch?v=VbkmTn-2-Kg)
 
-## Sparklet for the micro:bit
+## Games for BBC micro:bit with Sparklet Shield
 
 This project uses the [Sparklet for the micro:bit](https://siliconsquared.com/sparkletmicrobit/) which features a 16x16 matrix of colorful Neopixels. Click on the banner above for a demo.
 
