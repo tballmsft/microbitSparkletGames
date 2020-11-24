@@ -1,3 +1,6 @@
+
+![sparklet back](sparkletBack.JPG)![sparklet snake](sparkletSnake.JPG)![sparklet blocks](sparkletBlocks.JPG)
+
 ## Run/Edit this project ![Build status badge](https://github.com/tballmsft/microbitsparkletgames/workflows/MakeCode/badge.svg)
 
 To edit this repository in MakeCode.
