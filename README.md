@@ -3,7 +3,7 @@
 
 ## Games for BBC micro:bit with Sparklet Shield
 
-This project uses the [Sparklet for the micro:bit](https://siliconsquared.com/sparkletmicrobit/) which features a 16x16 matrix of colorful Neopixels. Click on the banner above for a [video demonstration]((https://www.youtube.com/watch?v=VbkmTn-2-Kg).
+This project uses the [Sparklet for the micro:bit](https://siliconsquared.com/sparkletmicrobit/) which features a 16x16 matrix of colorful Neopixels. Click on the banner above for a [video demonstration](https://www.youtube.com/watch?v=VbkmTn-2-Kg).
 
 ## Run/Edit this project ![Build status badge](https://github.com/tballmsft/microbitsparkletgames/workflows/MakeCode/badge.svg)
 
