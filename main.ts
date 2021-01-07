@@ -9,6 +9,7 @@ class Screen {
         this.strip = neopixel.create(DigitalPin.P0, SCREEN_WIDTH*SCREEN_HEIGHT, NeoPixelMode.RGB)
         this.strip.setBrightness(25)                    // don't blind the user
         this.strip.setMatrixWidth(SCREEN_WIDTH)         // sparklet screen is 16x16
+        pins.setMatrixWidth(DigitalPin.P0, 16)
         pins.digitalWritePin(DigitalPin.P1, 1)          // turn on the sparklet display 
     }
     setPixel(x: number, y: number, c: number) {
