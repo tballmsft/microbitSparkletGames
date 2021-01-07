@@ -9,7 +9,7 @@ This project uses the [Sparklet for the micro:bit](https://siliconsquared.com/sp
 
 To edit this repository in MakeCode.
 
-* open [https://makecode.microbit.org/](https://makecode.microbit.org/)
+* open [https://makecode.microbit.org/beta](https://makecode.microbit.org/beta)
 * click on **Import** then click on **Import URL**
 * paste **https://github.com/tballmsft/microbitsparkletgames** and click import
 
